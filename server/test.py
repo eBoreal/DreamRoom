@@ -1,6 +1,6 @@
 # This file is used to verify your http server acts as expected
 # Run it with `python3 test.py``
-
+import os
 import requests
 import base64
 import requests
@@ -16,10 +16,18 @@ def string_to_pil(img_string):
          validate=True)))
 
 
-trial_name = "cyborg-arm"
-prompt = 'Give her a cyborg arm' # turn him into a cyborg. 
+prompt = "turn him into a cyborg"
+num_inference_steps=20
+image_guidance_scale=1.5
+prompt_guidance_scale=10
+num_images_per_prompt= 1
 
-for input_path in glob.glob("data/input/venus*"):
+trial_name = f"cyborg-new-{num_inference_steps}-{image_guidance_scale}-{prompt_guidance_scale}"
+
+save_folder = f"data/output/{trial_name}"
+os.mkdir(save_folder)
+
+for input_path in glob.glob("data/input/*512*"):
 
     name = input_path.split("/")[-1].split(".")[0]
 
@@ -34,9 +42,11 @@ for input_path in glob.glob("data/input/venus*"):
 
     model_inputs = {'prompt': prompt,
                     'image': base64_string,
-                    'num_inference_steps': 10,
-                    'image_guidance_scale': 1.5,
-                    'prompt_guidance_scale': 7}
+                    'num_inference_steps': num_inference_steps,
+                    'image_guidance_scale': image_guidance_scale,
+                    'prompt_guidance_scale': prompt_guidance_scale,
+                    'num_images_per_prompt': num_images_per_prompt
+                    }
 
     s = time.time()
     res = requests.post('http://localhost:8000/pix2pix', json = model_inputs, 
@@ -51,6 +61,6 @@ for input_path in glob.glob("data/input/venus*"):
     print("completed in: ", round(e-s, 2))
     if 'modelOutputs' in output.keys():
         img = string_to_pil(output['modelOutputs'][0]['image-0'])
-        img.save(f"data/output/{name}-{trial_name}.jpeg")
+        img.save(f"{save_folder}/{name}.jpeg")
     else:
         print(output)

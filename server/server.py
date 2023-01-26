@@ -31,7 +31,8 @@ def forward_to_inference(request):
         return response.json(out, status=200)
     
     except Exception as e:
-        response.json({'message': e}, status=500)
+        return response.json({'description': e.description, 
+        'message': e.message}, status=500)
 
 
 if __name__ == '__main__':
