@@ -1,4 +1,0 @@
-banana-dev
-sanic
-requests
-python-dotenv
