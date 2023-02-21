@@ -1,0 +1,3 @@
+[submodule "apis/pix2pix"]
+	path = apis/pix2pix
+	url = https://github.com/eBoreal/serverless-pix2pix
